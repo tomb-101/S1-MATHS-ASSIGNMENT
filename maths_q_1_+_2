@@ -1,0 +1,123 @@
+import math
+import cmath
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def main():
+    print("this is the starting position in room one:")
+    print(room_one())
+    print()
+    print("this is the starting position in room two:")
+    print(room_two())
+    print()
+    print("this is the location of the keycard in both rooms:")
+    print(mean_moves(room_one(), 64))
+    print()
+    # print("this is a list of all positions DI has moved to:")
+    # print(list_all(room_two(), 64))
+    # print()
+    #print("the number of moves it would take to find the keycard in room two:")
+    #print(get_move_num(room_two()))
+    #print()
+    # print("the location closest to the keycard is:")
+    # print(closest_loc(list_all(room_two(), 64), mean_moves(room_one(), 64)))
+    print("the smallest number of movements needed to find the keycard in the second room:")
+    print(find_min_steps())
+    plot(room_two())
+
+
+def room_one(): # function responsible for giving back the result of Zinitial 1
+    Z_ini_1 = (1+1j) / ((math.sqrt(2)) * (1j**4) * (((1+1j) / abs(1+1j)) ** 30))
+    return Z_ini_1
+
+
+def room_two(): # function responsible for giving back the result of Zinitial 2
+    Z_ini_2 = ((math.sqrt(2)) * (1+1j)) / (((1+1j) / (math.sqrt(2))) ** 30)
+    return Z_ini_2
+
+
+def move(pos): # function responsible for moving DI Irrational around
+    u=math.sqrt(2)/1+1j
+    pos/=u
+    return pos
+
+
+def mean_moves(pos, moves): # function responsible for returning the answer to question 1.1
+    """MAKE LOCAL LIST AND TOTAL"""
+    positions=[]
+    total=0
+    """FOR EVERY COUNT, MOVE POSITION BASED ON i"""
+    for i in range(moves):
+        pos=move(pos)
+        positions.append(pos)
+    """FOR EVERY POSITION IN POSITION, ADD THE POSITION TO A TOTAL"""
+    for num in positions:
+        total+=num
+    """GET MEAN VALUE OF TOTAL"""
+    total/=moves
+    return total
+
+
+def list_all(pos, moves): # function used to list out coordinates of all movements
+    positions=[]
+    for i in range(moves):
+        pos=move(pos)
+        positions.append(pos)
+    return positions
+
+
+def plot(room): # function responsible for plotting graph
+    mean=mean_moves(room, 64)
+    full_list=list_all(room, 64)
+    x=[element.real for element in full_list]
+    y=[element.imag for element in full_list]
+    plt.scatter(room.real, room.imag, color='blue')
+    plt.scatter(x, y, color='green')
+    plt.scatter(mean.real, mean.imag, color='red')
+    round_x=round(mean.real)
+    round_y=round(mean.imag)
+    plt.scatter(round_x, round_y, color='purple')
+    plt.show()
+
+
+def find_min_steps():
+    steps=[]
+    total=0
+    '''FOR EVERY MOVE IN ROOM ONE'''
+    for num in list_all(room_one(), 64):
+        steps.append(num)
+        '''FOR EVERY ITEM IN THE STEPS ARRAY'''
+        for item in steps:
+            total+=item
+        total/=len(steps)
+        total/=2
+        print(total, len(steps))
+        '''IF THE TOTAL IS EQUAL TO THE KEYCARD'S LOCATION IN ROOM ONE'''
+        if total==mean_moves(room_one(), 64):
+            return len(steps)
+
+
+# following functions are broken and have no purpose
+'''
+def get_move_num(room):
+    count=0
+    full_list=list_all(room, 64)
+    for item in full_list:
+        count+=1
+        if item==mean_moves(room_one(), 64):
+            return count
+
+
+def closest_loc(locations, target):
+    difference_list=[]
+    difference=0
+    for loc in locations:
+        difference=target-loc
+        difference_list.append(difference)
+    smallest_difference=max(difference_list)
+    return smallest_difference
+'''
+
+
+main()
